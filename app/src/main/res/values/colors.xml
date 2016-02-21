@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="checked_rating_text_day">#607D8B</color>
+    <color name="unchecked_rating_text_day">#000</color>
+
+    <color name="checked_rating_text_night">#FF9800</color>
+    <color name="unchecked_rating_text_night">#fff</color>
+
+    <color name="activity_background_day">#F2F2F2</color>
+    <color name="activity_background_night">#1E1E1E</color>
+
+    <color name="drawer_item_background_color_day">#fff</color>
+    <color name="drawer_item_background_color_night">#000</color>
+
+    <color name="default_text_color_day">#000</color>
+    <color name="default_text_color_night">#fff</color>
+
+    <color name="card_background_day">#fff</color>
+    <color name="card_background_night">#1E1E1E</color>
+
+    <color name="toolbar_color_night">#37474F</color>
+    <color name="toolbar_color_day">#607d8b</color>
+
+    <color name="statusbar_color_day">#4d646f</color>
+    <color name="statusbar_color_night">#263238</color>
+
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
+</resources>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="drawer_icons_black">
+        <item>@drawable/ic_emoticon_black_36dp</item>
+        <item>@drawable/ic_dice_36dp_black</item>
+        <item>@drawable/ic_star_circle_black_36dp</item>
+        <item>@drawable/ic_trending_up_black_36dp</item>
+        <item>@drawable/ic_eye_off_black_36dp</item>
+        <item>@drawable/ic_heart_black_36dp</item>
+        <item>@drawable/ic_action_face_unlock_36dp_black</item>
+        <item>@drawable/ic_bookmark_black_36dp</item>
+        <item>@drawable/ic_settings</item>
+    </array>
+
+    <array name="drawer_icons_white">
+        <item>@drawable/ic_emoticon_white_36dp</item>
+        <item>@drawable/ic_dice_36dp_white</item>
+        <item>@drawable/ic_star_circle_white_36dp</item>
+        <item>@drawable/ic_trending_up_white_36dp</item>
+        <item>@drawable/ic_eye_off_white_36dp</item>
+        <item>@drawable/ic_heart_white_36dp</item>
+        <item>@drawable/ic_action_face_unlock_36dp_white</item>
+        <item>@drawable/ic_bookmark_white_36dp</item>
+        <item>@drawable/ic_settings_white</item>
+    </array>
+
+    <array name="settings_icons_day">
+        <item>@drawable/ic_day_select</item>
+        <item>@drawable/ic_editor_format_size</item>
+    </array>
+
+    <array name="settings_icons_night">
+        <item>@drawable/ic_day_select_night</item>
+        <item>@drawable/ic_editor_format_size_night</item>
+    </array>
+</resources>

@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">BashClient</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string-array name="navigation_drawer_items">
+        <item>Новые</item>
+        <item>Случайные</item>
+        <item>Лучшие</item>
+        <item>По рейтингу</item>
+        <item>Бездна</item>
+        <item>Топ Бездны</item>
+        <item>Лучшее Бездны</item>
+        <item>Закладки</item>
+        <item>Настройки</item>
+    </string-array>
+
+    <string-array name="settings_item_main">
+    <item>Ночной режим</item>
+    <item>Размер текста</item>
+</string-array>
+
+    <string-array name="settings_item_details">
+        <item>Режим ночь предназначен для чтения ночью</item>
+        <item>Изменить размер шрифта</item>
+    </string-array>
+    <string name="quote_text_example">Пример текста</string>
+    <string name="dialog_ok">ОК</string>
+    <string name="dialog_cancel">ОТМЕНА</string>
+    <string name="share_quote">Поделиться цитатой:</string>
+    <string name="toast_text">При загрузке данных произошла ошибка. Проверьте соединение с сетью.</string>
+    <string name="empty_list">Цитаты не загружены.\nОшибка сети.</string>
+    <string name="search_title">Поиск цитат</string>
+    <string name="search_hint">Поиск по цитатам</string>
+    <string name="continue_reading">ПРОДОЛЖИТЬ ЧТЕНИЕ</string>
+
+</resources>

@@ -1,0 +1,77 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"  tools:context=".MainActivityFragment">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/quote_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ListView
+            android:divider="#00000000"
+            android:id="@+id/quote_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none"
+            >
+        </ListView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+    <ProgressBar
+        android:indeterminate="true"
+        android:indeterminateDrawable="@drawable/progress_bar"
+        android:id="@+id/download_status"
+        android:visibility="visible"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        style="@style/Base.Widget.AppCompat.Button.Small"
+        android:visibility="invisible"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:id="@+id/quote_page"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.melnykov.fab.FloatingActionButton
+        android:src="@drawable/ic_arrow_up_white_24dp"
+        xmlns:fab="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/quote_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        fab:fab_colorNormal="@color/toolbar_color_day"
+        fab:fab_colorPressed="@color/toolbar_color_day"/>
+
+    <RelativeLayout
+        android:id="@+id/empty_layout"
+        android:padding="16dp"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/empty_image"
+            android:src="@drawable/ic_emoticon_sad_black_48dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp" />
+
+        <TextView
+            android:layout_centerHorizontal="true"
+            android:paddingLeft="16dp"
+            android:text="@string/empty_list"
+            android:layout_toRightOf="@+id/empty_image"
+            android:id="@+id/empty_text"
+            android:textSize="22sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
