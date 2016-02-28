@@ -12,11 +12,13 @@
         <item>Лучшее Бездны</item>
         <item>Закладки</item>
         <item>Настройки</item>
+        <item>Информация</item>
     </string-array>
 
     <string-array name="settings_item_main">
     <item>Ночной режим</item>
     <item>Размер текста</item>
+    <item>Дополнительные возможности чтения</item>
 </string-array>
 
     <string-array name="settings_item_details">
@@ -32,5 +34,9 @@
     <string name="search_title">Поиск цитат</string>
     <string name="search_hint">Поиск по цитатам</string>
     <string name="continue_reading">ПРОДОЛЖИТЬ ЧТЕНИЕ</string>
+    <string name="show_page">Номера страниц</string>
+    <string name="show_up_button">Кнопка "Вверх"</string>
+    <string name="end_text">Цитаты закончились./nНовых не завезли :(</string>
+    <string name="crash_toast_text">Ой! Что-то пошло не так :(</string>
 
 </resources>

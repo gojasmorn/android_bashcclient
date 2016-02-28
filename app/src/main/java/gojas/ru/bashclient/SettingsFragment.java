@@ -13,22 +13,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 
 import com.balysv.materialripple.MaterialRippleLayout;
 
-import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 /**
  * Created by gojas on 15.07.2015.
  */
 public class SettingsFragment extends Fragment {
+    public static final int MIN_TEXT=14;
 
     @Nullable
     @Override
@@ -50,22 +53,22 @@ public class SettingsFragment extends Fragment {
                         dialogLayout.setBackgroundColor(Utility.getActivityBackgroundColor());
                         final TextView quoteText=(TextView)dialog.findViewById(R.id.quote_text);
                         quoteText.setTextColor(Utility.getDefaultTextColor());
-                        quoteText.setTextSize(TypedValue.COMPLEX_UNIT_SP,Utility.getTextSize());
-                        final DiscreteSeekBar formatSeeker=(DiscreteSeekBar)dialog.findViewById(R.id.quote_text_format);
-                        formatSeeker.setProgress(Utility.getTextSize());
-                        formatSeeker.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
+                        quoteText.setTextSize(TypedValue.COMPLEX_UNIT_SP, Utility.getTextSize());
+                        final SeekBar formatSeeker=(SeekBar)dialog.findViewById(R.id.quote_text_format);
+                        formatSeeker.setProgress(Utility.getTextSize()-MIN_TEXT);
+                        formatSeeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                             @Override
-                            public void onProgressChanged(DiscreteSeekBar discreteSeekBar, int i, boolean b) {
-                                quoteText.setTextSize(TypedValue.COMPLEX_UNIT_SP, formatSeeker.getProgress());
+                            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                                quoteText.setTextSize(TypedValue.COMPLEX_UNIT_SP, formatSeeker.getProgress()+MIN_TEXT);
                             }
 
                             @Override
-                            public void onStartTrackingTouch(DiscreteSeekBar discreteSeekBar) {
+                            public void onStartTrackingTouch(SeekBar seekBar) {
 
                             }
 
                             @Override
-                            public void onStopTrackingTouch(DiscreteSeekBar discreteSeekBar) {
+                            public void onStopTrackingTouch(SeekBar seekBar) {
 
                             }
                         });
@@ -77,9 +80,9 @@ public class SettingsFragment extends Fragment {
                             public void onClick(View v) {
                                 SharedPreferences preferences=getActivity().getPreferences(Activity.MODE_PRIVATE);
                                 SharedPreferences.Editor ed = preferences.edit();
-                                ed.putString(Utility.MODE_TEXT_SIZE, String.valueOf(formatSeeker.getProgress()));
+                                ed.putString(Utility.MODE_TEXT_SIZE, String.valueOf(formatSeeker.getProgress()+MIN_TEXT));
                                 ed.apply();
-                                Utility.setTextSize(String.valueOf(formatSeeker.getProgress()));
+                                Utility.setTextSize(String.valueOf(formatSeeker.getProgress()+MIN_TEXT));
                                 dialog.cancel();
                             }
                         });
@@ -92,6 +95,84 @@ public class SettingsFragment extends Fragment {
                             }
                         });
                         dialog.show();
+                        break;
+                    case 2:
+                        final Dialog dialogRead=new Dialog(getActivity());
+                        dialogRead.setCancelable(true);
+                        dialogRead.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        dialogRead.setContentView(R.layout.dialog_read_function);
+                        RelativeLayout dialogReadLayout=(RelativeLayout)dialogRead.findViewById(R.id.dialog_layout);
+                        RelativeLayout pageItem=(RelativeLayout)dialogRead.findViewById(R.id.item_first);
+                        RelativeLayout upItem=(RelativeLayout)dialogRead.findViewById(R.id.item_second);
+                        TextView upText=(TextView)dialogRead.findViewById(R.id.text_up);
+                        TextView pageText=(TextView)dialogRead.findViewById(R.id.text_page);
+                        final ToggleButton pageToggle=(ToggleButton)dialogRead.findViewById(R.id.toggle_first);
+                        final ToggleButton upToggle=(ToggleButton)dialogRead.findViewById(R.id.toggle_second);
+                        final SharedPreferences preferences=getActivity().getPreferences(Activity.MODE_PRIVATE);
+                        String upValue=preferences.getString(Utility.FAB_MODE, Utility.MODE_OFF);
+                        String pageValue=preferences.getString(Utility.PAGE_MODE, Utility.MODE_OFF);
+                        //Log.d(MainActivity.TAG,"upValue "+upValue);
+                        //Log.d(MainActivity.TAG,"pageValue "+pageValue);
+                        dialogReadLayout.setBackgroundColor(Utility.getDefaultItemBackgroundColor());
+                        pageText.setTextColor(Utility.getDefaultTextColor());
+                        upText.setTextColor(Utility.getDefaultTextColor());
+                        upToggle.setButtonDrawable(Utility.getSettingsToggle());
+                        pageToggle.setButtonDrawable(Utility.getSettingsToggle());
+
+                        if(upValue.equals(Utility.MODE_ON)){
+                            upToggle.setChecked(true);
+                        }else{
+                            upToggle.setChecked(false);
+                        }
+
+                        if (pageValue.equals(Utility.MODE_ON)){
+                            pageToggle.setChecked(true);
+                        }else{
+                            pageToggle.setChecked(false);
+                        }
+
+                        upToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                String status;
+                                if (isChecked) {
+                                    status = Utility.MODE_ON;
+                                } else {
+                                    status = Utility.MODE_OFF;
+                                }
+                                SharedPreferences.Editor ed = preferences.edit();
+                                ed.putString(Utility.FAB_MODE, status);
+                                ed.commit();
+
+                            }
+                        });
+                        pageToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                String status;
+                                if (isChecked) {
+                                    status = Utility.MODE_ON;
+                                } else {
+                                    status = Utility.MODE_OFF;
+                                }
+                                SharedPreferences.Editor ed = preferences.edit();
+                                ed.putString(Utility.PAGE_MODE, status);
+                                ed.commit();
+                            }
+                        });
+                        pageItem.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                pageToggle.toggle();
+                            }
+                        });
+                        upItem.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                upToggle.toggle();
+                            }
+                        });
+                        dialogRead.show();
                         break;
                 }
             }

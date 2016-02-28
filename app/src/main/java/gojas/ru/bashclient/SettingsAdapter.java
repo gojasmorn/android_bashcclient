@@ -24,16 +24,19 @@ import android.widget.ToggleButton;
  */
 public class SettingsAdapter extends BaseAdapter {
     String[] main;
-    String[] details;
+    //String[] details;
     Context context;
     LayoutInflater inflater;
     Activity activity;
+    SharedPreferences preferences;
     public SettingsAdapter(Activity activity){
         this.context=activity;
         this.activity=activity;
+        //// TODO: 08.08.2015 добавить пункты(О сайте)
         this.main=context.getResources().getStringArray(R.array.settings_item_main);
-        this.details=context.getResources().getStringArray(R.array.settings_item_details);
+        //this.details=context.getResources().getStringArray(R.array.settings_item_details);
         inflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        preferences=activity.getPreferences(Activity.MODE_PRIVATE);
     }
     @Override
     public int getCount() {
@@ -63,8 +66,8 @@ public class SettingsAdapter extends BaseAdapter {
         TextView mainText=(TextView)item.findViewById(R.id.main_name);
         mainText.setText(main[position]);
         mainText.setTextColor(Utility.getDefaultTextColor());
-        TextView detailsText=(TextView)item.findViewById(R.id.details_text);
-        detailsText.setText(details[position]);
+        //TextView detailsText=(TextView)item.findViewById(R.id.details_text);
+        //detailsText.setText(details[position]);
         if(position==0){
             final ToggleButton toggleMode=(ToggleButton)item.findViewById(R.id.toggle_mode);
             toggleMode.setVisibility(View.VISIBLE);
@@ -73,7 +76,7 @@ public class SettingsAdapter extends BaseAdapter {
             toggleMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    SharedPreferences preferences=activity.getPreferences(Activity.MODE_PRIVATE);
+
                     if(isChecked){
                         SharedPreferences.Editor ed = preferences.edit();
                         ed.putString(Utility.MODE_LABEL, Utility.MODE_ON);

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialog_layout"
+    android:background="#ffffff"
+    android:padding="24dp"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/item_first"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="72dp">
+
+        <TextView
+            android:textColor="#000"
+            android:id="@+id/text_page"
+            android:textSize="16sp"
+            android:text="@string/show_page"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="0dp"
+            android:layout_alignParentLeft="true"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ToggleButton
+            android:background="@drawable/toggle_day_mode_day"
+            android:id="@+id/toggle_first"
+            android:text=""
+            android:textOff=""
+            android:textOn=""
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_width="42dp"
+            android:layout_height="42dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/item_second"
+        android:layout_below="@+id/item_first"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="72dp">
+
+        <TextView
+            android:id="@+id/text_up"
+            android:textColor="#000"
+            android:textSize="16sp"
+            android:text="@string/show_up_button"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="0dp"
+            android:layout_alignParentLeft="true"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ToggleButton
+            android:id="@+id/toggle_second"
+            android:background="@drawable/toggle_day_mode_day"
+            android:text=""
+            android:textOff=""
+            android:textOn=""
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_width="42dp"
+            android:layout_height="42dp" />
+    </RelativeLayout>
+
+</RelativeLayout>

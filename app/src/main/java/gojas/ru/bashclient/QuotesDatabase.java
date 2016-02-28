@@ -28,11 +28,17 @@ public class QuotesDatabase {
     }
 
     public void addVote(String quoteId,int vote){
+        try {
+            int id=Integer.valueOf(quoteId);
+            Cursor cursor=getVoteByQuoteId(id);
+            if(cursor.getCount()>0)deleteVoteByQuoteId(id);
+        }catch (Exception e){}
         String query="insert into votes ( quote_id, vote ) values (?,?)";
         database.execSQL(query,new String[]{quoteId,String.valueOf(vote)});
     }
 
     public void deleteVoteByQuoteId(int quoteId){
+        //Log.d(MainActivity.TAG,"delete vote by id = " +quoteId);
         String query="delete from votes WHERE quote_id = ?";
         database.execSQL(query,new String[]{String.valueOf(quoteId)});
     }
@@ -82,6 +88,7 @@ public class QuotesDatabase {
     }
 
     public void addBookMark(Quote quote){
+        //Log.d(MainActivity.TAG,"addBookmark"+quote.toJSON());
         String query="INSERT into bookmarks (quote_id,quote_text) values (?,?)";
         database.execSQL(query,new String[]{String.valueOf(quote.getId()),quote.toJSON()});
     }
@@ -116,11 +123,32 @@ public class QuotesDatabase {
         String query="replace into votes (_id,quote_id,vote) values (?,?,?)";
         database.execSQL(query,new String[]{String.valueOf(cursor.getInt(cursor.getColumnIndex("_id"))),String.valueOf(quote_id),String.valueOf(vote)});
     }
+
+    public void addOfflineVote(String quoteAdress,String voteAdress){
+        String query="INSERT into offline_votes (quote_adress,vote_adress) values (?,?)";
+        database.execSQL(query,new String[]{quoteAdress,voteAdress});
+    }
+
+    public void deleteOfflineVote(String quoteAdress){
+        String query="DELETE from offline_votes WHERE quote_adress = ?";
+        String[] args=new String[]{quoteAdress};
+        database.execSQL(query,args);
+    }
+
+    public Cursor getOfflineVotes(){
+        String query="SELECT quote_adress,vote_adress FROM offline_votes";
+        Cursor cursor=database.rawQuery(query,null);
+        if(cursor!=null){
+            cursor.moveToFirst();
+        }
+        return cursor;
+    }
     public class DatabaseHelper extends SQLiteOpenHelper {
         public static final String dbName="quotes.db";
         public static final String CREATE_VOTES_TABLE="CREATE TABLE votes (_id INTEGER primary key AUTOINCREMENT,"+" quote_id text,"+" vote integer"+");";
         public static final String CREATE_CACHE_TABLE="CREATE TABLE cache (_id INTEGER primary key AUTOINCREMENT,"+" type integer,"+" cache text"+");";
         public static final String CREATE_BOOKMARK_TABLE="CREATE TABLE bookmarks (_id INTEGER primary key AUTOINCREMENT,"+"quote_id integer,"+"quote_text text"+");";
+        public static final String CREATE_OFFLINE_VOTES_TABLE="CREATE TABLE offline_votes (_id INTEGER primary key AUTOINCREMENT,"+"quote_adress text,"+"vote_adress text"+");";
         public DatabaseHelper(Context context) {
             super(context, dbName, null, 1);
         }
@@ -130,6 +158,7 @@ public class QuotesDatabase {
             db.execSQL(CREATE_VOTES_TABLE);
             db.execSQL(CREATE_CACHE_TABLE);
             db.execSQL(CREATE_BOOKMARK_TABLE);
+            db.execSQL(CREATE_OFFLINE_VOTES_TABLE);
         }
 
         @Override

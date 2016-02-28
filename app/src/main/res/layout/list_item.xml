@@ -73,7 +73,17 @@
                 android:id="@+id/buttons_panel"
                 android:layout_below="@+id/quote_text"
                 android:layout_width="match_parent"
-                android:layout_height="24dp">
+                android:layout_height="36dp">
+
+                <ImageView
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="8dp"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/vote_status"
+                    android:visibility="gone"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    />
                 <ToggleButton
                     android:layout_centerVertical="true"
                     android:id="@+id/button_plus"
@@ -84,11 +94,11 @@
                     android:textOff=""
                     android:textOn=""
                     android:checked="false"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp" />
+                    android:layout_width="30dp"
+                    android:layout_height="30dp" />
 
                 <TextView
-                    android:layout_marginLeft="40dp"
+                    android:layout_marginLeft="48dp"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:layout_centerVertical="true"
@@ -109,8 +119,8 @@
                     android:textOff=""
                     android:textOn=""
                     android:checked="false"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"  />
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"  />
 
                 <ToggleButton
 
@@ -123,8 +133,8 @@
                     android:textOff=""
                     android:textOn=""
                     android:checked="false"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"  />
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"  />
 
                 <ToggleButton
                     android:layout_centerVertical="true"
@@ -136,8 +146,8 @@
                     android:textOff=""
                     android:textOn=""
                     android:checked="false"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp" />
+                    android:layout_width="30dp"
+                    android:layout_height="30dp" />
 
                 <ToggleButton
                     android:layout_centerVertical="true"
@@ -149,8 +159,8 @@
                     android:textOff=""
                     android:textOn=""
                     android:checked="false"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"  />
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"  />
 
                 <ToggleButton
                     android:layout_centerVertical="true"
@@ -162,8 +172,8 @@
                     android:textOff=""
                     android:textOn=""
                     android:checked="false"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"  />
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"  />
 
 
                 <TextView

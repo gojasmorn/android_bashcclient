@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -79,14 +80,13 @@ public class QuoteAdapter extends BaseAdapter {
         shareQuote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
                 String shareBody = quote.getText();
                 if (Quote.hasRating(menuIndex))
                     shareBody = shareBody + "\n" + quote.getQuoteAdress();
-                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-                //sharingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                Utility.getContext().startActivity(Intent.createChooser(sharingIntent, context.getResources().getString(R.string.share_quote)));
+                Utility.shareQuote(shareBody);
 
             }
         });
@@ -121,9 +121,7 @@ public class QuoteAdapter extends BaseAdapter {
             buttonBojan.setOnCheckedChangeListener(bojanChecked);
             buttonBojan.setTag(R.id.item, item);
 
-            buttonPlus.setChecked(false);
-            buttonMinus.setChecked(false);
-            buttonBojan.setChecked(false);
+
 
             if(cursor.getCount()>0){
                 rating.setTextColor(Utility.getRatingTextCheckedColor());
@@ -138,6 +136,10 @@ public class QuoteAdapter extends BaseAdapter {
                         buttonBojan.setChecked(true);
                         break;
                 }
+            }else{
+                buttonPlus.setChecked(false);
+                buttonMinus.setChecked(false);
+                buttonBojan.setChecked(false);
             }
 
             bookmarkToggle.setChecked(false);
@@ -146,6 +148,13 @@ public class QuoteAdapter extends BaseAdapter {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     Quote quoteMark=(Quote)buttonView.getTag();
+                    if (menuIndex==MainActivity.NEW || menuIndex==MainActivity.BYRATING){
+                        //Log.d(MainActivity.TAG,"continue");
+                        quoteMark.hasPageLink(true);
+                    }else {
+                        //Log.d(MainActivity.TAG,"continue false");
+                        quoteMark.hasPageLink(false);
+                    }
                     database.deleteBookMark(quoteMark.getId());
                     if(isChecked)database.addBookMark(quoteMark);
                 }
@@ -174,10 +183,13 @@ public class QuoteAdapter extends BaseAdapter {
     }
 
     private void setVote(int quoteId,int voteId){
-        WebView webView=new WebView(context);
+
+        WebView webView=new WebView(Utility.getContext());
+        webView.setWebViewClient(new WebViewClient());
         webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl(Quote.QUOTE_ADRESS_BODY + String.valueOf(quoteId));
         webView.loadUrl("javascript:v('" + String.valueOf(quoteId) + "'," + String.valueOf(voteId) + ",0);return false;");
+
     }
 
 
@@ -193,10 +205,7 @@ public class QuoteAdapter extends BaseAdapter {
             int delta;
             if(isChecked){
                 delta=1;
-                ToggleButton buttonMinus=Utility.getButtonMinus(view);
-                buttonMinus.setChecked(false);
-                ToggleButton buttonBojan=Utility.getButtonBojan(view);
-                buttonBojan.setChecked(false);
+                toggleDismiss(view,Quote.VOTE_PLUS);
                 database.addVote(String.valueOf(quote.getId()), Quote.VOTE_PLUS);
                 ratingText.setTextColor(Utility.getRatingTextCheckedColor());
             }else{
@@ -209,6 +218,7 @@ public class QuoteAdapter extends BaseAdapter {
                 ratingText.setText(String.valueOf(ratingInt));
                 quote.setRating(String.valueOf(ratingInt));
             }
+            if (database.getVoteByQuoteId(quote.getId()).getCount()==0) toggleShow(view);
             setVote(quote.getId(),Quote.VOTE_PLUS);
         }
     };
@@ -224,10 +234,7 @@ public class QuoteAdapter extends BaseAdapter {
             int delta;
             if(isChecked){
                 delta=-1;
-                ToggleButton buttonPlus=Utility.getButtonPlus(view);
-                buttonPlus.setChecked(false);
-                ToggleButton buttonBojan=Utility.getButtonBojan(view);
-                buttonBojan.setChecked(false);
+                toggleDismiss(view,Quote.VOTE_MINUS);
                 database.addVote(String.valueOf(quote.getId()), Quote.VOTE_MINUS);
                 ratingText.setTextColor(Utility.getRatingTextCheckedColor());
             }else{
@@ -241,6 +248,7 @@ public class QuoteAdapter extends BaseAdapter {
                 quote.setRating(String.valueOf(ratingInt));
             }
             setVote(quote.getId(),Quote.VOTE_MINUS);
+            if (database.getVoteByQuoteId(quote.getId()).getCount()==0) toggleShow(view);
         }
     };
 
@@ -252,18 +260,40 @@ public class QuoteAdapter extends BaseAdapter {
             TextView ratingText=(TextView)view.findViewById(R.id.quote_rating);
             database.deleteVoteByQuoteId(quote.getId());
             if(isChecked){
-                ToggleButton buttonMinus=Utility.getButtonMinus(view);
-                buttonMinus.setChecked(false);
-                ToggleButton buttonPlus=Utility.getButtonPlus(view);
-                buttonPlus.setChecked(false);
+                toggleDismiss(view,Quote.VOTE_BOJAN);
                 database.addVote(String.valueOf(quote.getId()), Quote.VOTE_BOJAN);
                 ratingText.setTextColor(Utility.getRatingTextCheckedColor());
             }else{
                 ratingText.setTextColor(Utility.getRatingTextUnCheckedColor());
             }
             setVote(quote.getId(),Quote.VOTE_BOJAN);
+            if (database.getVoteByQuoteId(quote.getId()).getCount()==0) toggleShow(view);
         }
     };
+
+    private void toggleDismiss(View view,int vote) {
+
+        ToggleButton buttonMinus=Utility.getButtonMinus(view);
+        buttonMinus.setVisibility(View.GONE);
+        ToggleButton buttonPlus=Utility.getButtonPlus(view);
+        buttonPlus.setVisibility(View.GONE);
+        ToggleButton buttonBojan=Utility.getButtonBojan(view);
+        buttonBojan.setVisibility(View.GONE);
+        ImageView status=(ImageView)view.findViewById(R.id.vote_status);
+        status.setVisibility(View.VISIBLE);
+        status.setBackgroundResource(Utility.getStatus(vote));
+    }
+
+    private void toggleShow(View view) {
+        ToggleButton buttonMinus=Utility.getButtonMinus(view);
+        buttonMinus.setVisibility(View.VISIBLE);
+        ToggleButton buttonPlus=Utility.getButtonPlus(view);
+        buttonPlus.setVisibility(View.VISIBLE);
+        ToggleButton buttonBojan=Utility.getButtonBojan(view);
+        buttonBojan.setVisibility(View.VISIBLE);
+        ImageView status=(ImageView)view.findViewById(R.id.vote_status);
+        status.setVisibility(View.GONE);
+    }
 
     public void setQuotes(ArrayList<Quote> quotes) {
         this.quotes = quotes;

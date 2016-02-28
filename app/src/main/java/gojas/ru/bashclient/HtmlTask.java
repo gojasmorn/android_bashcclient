@@ -21,6 +21,7 @@ public class HtmlTask extends AsyncTask<String,Void,ArrayList<Quote>> {
     QuoteFragment fragment;
     Context context;
     ArrayList<Quote> quotes;
+    final String ADYYSBEST_END="год назад";
 
     boolean loaded;
     boolean refresh;
@@ -29,11 +30,14 @@ public class HtmlTask extends AsyncTask<String,Void,ArrayList<Quote>> {
     Document doc=null;
     Element body;
     String adress="";
+    int shiftList=-1;
+    MainActivity mainActivity;
 
     interface TaskInterface{
         void execute(String adress,QuoteFragment fragment,boolean loaded, boolean refresh,int currentIndex,ArrayList<Quote> quotes);
         void updateData(QuoteFragment fragment);
-        void onPostExecute(QuoteFragment fragment,ArrayList<Quote> arrayList);
+        void onPostExecute(QuoteFragment fragment,ArrayList<Quote> arrayList,int currentIndex);
+        void shiftList(int position);
         void deleteTask(int index);
         void nulledTask();
     }
@@ -49,8 +53,6 @@ public class HtmlTask extends AsyncTask<String,Void,ArrayList<Quote>> {
         fragment=f;
         context=c;
         database=QuotesDatabase.getInstance(context);
-        Log.d(MainActivity.TAG,"loaded= "+loaded);
-        Log.d(MainActivity.TAG,"refresh= "+refresh);
         loaded=f.isLoaded();
         refresh=f.isRefresh();
     }
@@ -68,8 +70,8 @@ public class HtmlTask extends AsyncTask<String,Void,ArrayList<Quote>> {
     protected ArrayList<Quote> doInBackground(String... params) {
 
 
-        Log.d(MainActivity.TAG,"loaded ="+loaded);
-        Log.d(MainActivity.TAG,"refresh= "+refresh);
+        //Log.d(MainActivity.TAG,"loaded ="+loaded);
+        //Log.d(MainActivity.TAG, "refresh= " + refresh);
         if(!loaded||refresh) {
             quotes = new ArrayList<>();
         }
@@ -77,19 +79,19 @@ public class HtmlTask extends AsyncTask<String,Void,ArrayList<Quote>> {
         try{
             adress=params[0];
             doc= Jsoup.connect(adress).get();
-
-
         }catch (Exception e){
 
         }
 
         if (doc!=null){
             body=doc.select("#body").first();
+            if(body==null)return null;
             Iterator<Element> iterator=body.select(".quote").iterator();
-
+            if (iterator==null)return null;
             int i=0;
             while(iterator.hasNext()){
                 Element current=iterator.next();
+                if (current==null)return null;
                 String text = current.select(".text").toString();
                 if(!text.equals("")) {
                     Cursor vote=null;
@@ -108,6 +110,7 @@ public class HtmlTask extends AsyncTask<String,Void,ArrayList<Quote>> {
                     quote.setText(Quote.parseHtml(text.toString()));
                     if(currentIndex==MainActivity.NEW || currentIndex==MainActivity.BYRATING)
                     {
+                        //Log.d(MainActivity.TAG,"category has pageLink");
                         String currentLink=getCurrentLink(currentIndex, body);
                         quote.setAdress(currentLink);
                         quote.hasPageLink(true);
@@ -130,7 +133,7 @@ public class HtmlTask extends AsyncTask<String,Void,ArrayList<Quote>> {
                     if(vote!=null)vote.close();
                     i++;
                     quotes.add(quote);
-                    Log.d(MainActivity.TAG,"task is running");
+                    //Log.d(MainActivity.TAG,"task is running");
                 }
             }
         }
@@ -140,8 +143,23 @@ public class HtmlTask extends AsyncTask<String,Void,ArrayList<Quote>> {
     @Override
     protected void onPostExecute(ArrayList<Quote> arrayList) {
         super.onPostExecute(arrayList);
-        if(fragment!=null) {
-            fragment.updateNextLink(quotes.get(quotes.size()-1));
+        if (context!=null){
+            Utility.setContext(context);
+        }else{
+            //Log.d(MainActivity.TAG,"onPost context==null");
+        }
+        if (arrayList==null){
+            fragment.showToast(fragment.isEnd());
+            return;
+        }
+        if(fragment!=null && quotes.size()>0) {
+            Quote lastQuote=quotes.get(quotes.size()-1);
+            if(lastQuote.getNextLink().equals(QuoteFragment.NONE)){
+                fragment.setIsEnd(true);
+            }else{
+                fragment.updateNextLink(lastQuote);
+            }
+
             fragment.getEmptyLayout().setVisibility(View.GONE);
             QuoteAdapter quoteAdapter=null;
             if (!loaded || refresh) {
@@ -149,24 +167,15 @@ public class HtmlTask extends AsyncTask<String,Void,ArrayList<Quote>> {
                 fragment.listView.setAdapter(quoteAdapter);
                 fragment.setQuoteAdapter(quoteAdapter);
             }
-            if(refresh){
-                Log.d(MainActivity.TAG,"refresh");
-                QuoteAdapter adapter=fragment.getQuoteAdapter();
-                if (adapter!=null){
-                    for (Quote quote:quotes){
-                        Log.d(MainActivity.TAG,"quote text "+quote.getText());
-                    }
-                }
-            }
+            if (shiftList>0)fragment.listView.setSelectionFromTop(shiftList,0);
             fragment.getSwipeRefreshLayout().setRefreshing(false);
             fragment.getQuoteAdapter().notifyDataSetChanged();
             fragment.getBar().setVisibility(View.GONE);
-            //loaded = true;
-            //refresh = false;
             fragment.setLoaded(true);
             fragment.setRefresh(false);
             fragment.setQuotes(quotes);
         }
+        if (!Utility.isNetworkAvailable(context))fragment.showToast(fragment.isEnd());
     }
     private String getNextLink(int currentIndex, Element body) {
         Element next;
@@ -175,7 +184,11 @@ public class HtmlTask extends AsyncTask<String,Void,ArrayList<Quote>> {
         switch (currentIndex){
             case MainActivity.NEW:
                 index=Integer.valueOf(body.select("span.current").first().select("input.page").attr("value"))-1;
-                nextLink="/"+String.valueOf(index);
+                if (index==0){
+                    nextLink=QuoteFragment.NONE;
+                }else {
+                    nextLink = "/" + String.valueOf(index);
+                }
                 break;
             case MainActivity.RANDOM:
                 next=body.select("a.button").first();
@@ -187,7 +200,15 @@ public class HtmlTask extends AsyncTask<String,Void,ArrayList<Quote>> {
                 break;
             case MainActivity.BYRATING:
                 index=Integer.valueOf(body.select("span.current").first().select("input.page").attr("value"))+1;
-                nextLink="/"+String.valueOf(index);
+                int max=Integer.valueOf(body.select("span.current").first().select("input.page").attr("max"));
+                //Log.d(MainActivity.TAG,"end index "+index);
+                //Log.d(MainActivity.TAG,"end max "+max);
+                if (index<max){
+                    nextLink="/"+String.valueOf(index);
+                }else{
+                    nextLink=QuoteFragment.NONE;
+                }
+
                 break;
             case MainActivity.ABYSS:
                 next=body.select("a.button").first();
@@ -198,8 +219,15 @@ public class HtmlTask extends AsyncTask<String,Void,ArrayList<Quote>> {
             case MainActivity.ABYSSTOP:
                 break;
             case MainActivity.ABYSSBEST:
-                nextLink=body.select(".pager").first().select("a").first().attr("href");
-                nextLink=nextLink.replace("/abyssbest","");
+                String currentText=body.select(".pager").first().select("span.current").first().select("#datepicker").first().attr("value");
+                //Log.d(MainActivity.TAG,"current Text= "+currentText);
+                if (!currentText.equals(ADYYSBEST_END)){
+                    nextLink=body.select(".pager").first().select("a").first().attr("href");
+                    nextLink=nextLink.replace("/abyssbest","");
+                }else{
+                    nextLink=QuoteFragment.NONE;
+                }
+
                 break;
         }
         return nextLink;
@@ -248,5 +276,9 @@ public class HtmlTask extends AsyncTask<String,Void,ArrayList<Quote>> {
     public void setQuotes(ArrayList<Quote> quotes) {
         //if (quotes==null)quotes=new ArrayList<Quote>();
         this.quotes=quotes;
+    }
+
+    public void setShiftList(int shiftList) {
+        this.shiftList = shiftList;
     }
 }

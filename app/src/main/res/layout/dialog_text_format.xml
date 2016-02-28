@@ -12,16 +12,13 @@
             android:text="@string/quote_text_example"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-    <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
-
+    <SeekBar
+        android:max="14"
         android:id="@+id/quote_text_format"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/quote_text"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:dsb_min="14"
-        app:dsb_max="28"/>
+        android:layout_height="wrap_content"/>
 
     <com.balysv.materialripple.MaterialRippleLayout
         android:layout_alignParentRight="true"

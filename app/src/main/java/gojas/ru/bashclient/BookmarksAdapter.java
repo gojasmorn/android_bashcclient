@@ -40,7 +40,7 @@ public class BookmarksAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view=inflater.inflate(R.layout.bookmark_item,null);
+        View view=inflater.inflate(R.layout.bookmark_item, null);
         return view;
     }
 
@@ -82,10 +82,7 @@ public class BookmarksAdapter extends CursorAdapter {
                 String shareBody = current.getText();
                 if (Quote.hasRating(current.getMenuIndex()))
                     shareBody = shareBody + "\n" + current.getQuoteAdress();
-                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-                //sharingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                Utility.getContext().startActivity(Intent.createChooser(sharingIntent, currentContext.getResources().getString(R.string.share_quote)));
-
+                Utility.shareQuote(shareBody);
             }
         });
 
@@ -99,10 +96,11 @@ public class BookmarksAdapter extends CursorAdapter {
 
         continueButton.setTag(quote);
 
-
+        //Log.d(MainActivity.TAG,"hasAdress "+String.valueOf(quote.hasPageLink()));
         if(!quote.hasPageLink()){
             continueButton.setVisibility(View.GONE);
         }else{
+            continueButton.setVisibility(View.VISIBLE);
             continueText.setTextColor(Utility.getRatingTextCheckedColor());
             continueText.setTag(quote);
             continueButton.setRippleColor(Utility.getDefaultTextColor());
