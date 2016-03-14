@@ -3,9 +3,11 @@ package gojas.ru.bashclient;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.ToggleButton;
 
@@ -21,6 +23,7 @@ public class Utility {
     public static boolean nightModeOn=false;
     public static String MODE_ON="ON";
     public static String MODE_OFF="OFF";
+    public static String MAX_PAGE_LABEL = "max_page_save";
 
     private static TypedArray drawerDay;
     private static TypedArray drawerNight;
@@ -501,6 +504,27 @@ public class Utility {
         sharingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mainActivity.startActivity(Intent.createChooser(sharingIntent, mainActivity.getResources().getString(R.string.share_quote)));
 
+    }
+
+    public static void updateMaxPage(String adress){
+        if(adress.indexOf(QuoteFragment.adressArray[MainActivity.NEW]) == -1){
+            return;
+        }
+        int copyFrom = 0;
+        int maxPageInt = 0;
+        String maxPage = "";
+        copyFrom = adress.lastIndexOf("/");
+        maxPage = adress.substring(copyFrom);
+        maxPage = maxPage.replace("/", "");
+        final SharedPreferences preferences=mainActivity.getPreferences(Activity.MODE_PRIVATE);
+        try{
+            maxPageInt = Integer.parseInt(maxPage);
+            SharedPreferences.Editor ed = preferences.edit();
+            ed.putInt(Utility.MAX_PAGE_LABEL, maxPageInt);
+            ed.commit();
+        }catch(Exception e){
+
+        }
     }
 
     public static void setActivity(MainActivity activity) {

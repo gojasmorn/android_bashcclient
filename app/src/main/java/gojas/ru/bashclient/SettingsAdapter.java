@@ -32,7 +32,6 @@ public class SettingsAdapter extends BaseAdapter {
     public SettingsAdapter(Activity activity){
         this.context=activity;
         this.activity=activity;
-        //// TODO: 08.08.2015 добавить пункты(О сайте)
         this.main=context.getResources().getStringArray(R.array.settings_item_main);
         //this.details=context.getResources().getStringArray(R.array.settings_item_details);
         inflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

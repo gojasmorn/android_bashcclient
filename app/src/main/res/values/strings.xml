@@ -38,5 +38,6 @@
     <string name="show_up_button">Кнопка "Вверх"</string>
     <string name="end_text">Цитаты закончились./nНовых не завезли :(</string>
     <string name="crash_toast_text">Ой! Что-то пошло не так :(</string>
+    <string name="go_to_page">Перейти к странице</string>
 
 </resources>

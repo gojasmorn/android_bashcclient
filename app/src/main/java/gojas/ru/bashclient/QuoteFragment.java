@@ -209,6 +209,7 @@ public class QuoteFragment extends Fragment {
             quoteAdapter=new QuoteAdapter(getActivity(),quotes,currentIndex);
             listView.setAdapter(quoteAdapter);
             listView.setSelectionFromTop(listIndex, listTop);
+            Utility.updateMaxPage(quotes.get(0).getAdress());
         }else{
             getNewData();
         }
@@ -241,7 +242,6 @@ public class QuoteFragment extends Fragment {
         currentAdress=arguments.getString(HAS_ADRESS, NONE);
         nextAdress=arguments.getString(NEXT_LINK, NONE);
         positionQuote=arguments.getInt(POSITION, 0);
-        //Log.d(MainActivity.TAG,"menuIndex fragment "+currentIndex);
     }
 
 

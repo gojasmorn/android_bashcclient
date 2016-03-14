@@ -111,8 +111,6 @@ public class SettingsFragment extends Fragment {
                         final SharedPreferences preferences=getActivity().getPreferences(Activity.MODE_PRIVATE);
                         String upValue=preferences.getString(Utility.FAB_MODE, Utility.MODE_OFF);
                         String pageValue=preferences.getString(Utility.PAGE_MODE, Utility.MODE_OFF);
-                        //Log.d(MainActivity.TAG,"upValue "+upValue);
-                        //Log.d(MainActivity.TAG,"pageValue "+pageValue);
                         dialogReadLayout.setBackgroundColor(Utility.getDefaultItemBackgroundColor());
                         pageText.setTextColor(Utility.getDefaultTextColor());
                         upText.setTextColor(Utility.getDefaultTextColor());

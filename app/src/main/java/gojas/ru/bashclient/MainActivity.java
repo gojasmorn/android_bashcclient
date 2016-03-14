@@ -1,4 +1,6 @@
 package gojas.ru.bashclient;
+import android.app.Activity;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -14,11 +16,20 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.webkit.WebView;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.balysv.materialripple.MaterialRippleLayout;
 
 import java.util.ArrayList;
 
@@ -32,6 +43,8 @@ public class MainActivity extends ActionBarActivity implements HtmlTask.TaskInte
     int globalPosition;
     boolean drawerIsShow=false;
     HtmlTask currentTask;
+    MenuItem goToPage;
+    FragmentManager fragmentManager;
 
     private static String MANU_INDEX="menu";
 
@@ -79,7 +92,6 @@ public class MainActivity extends ActionBarActivity implements HtmlTask.TaskInte
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         if (savedInstanceState == null) {
-            //Log.d(TAG,"savedInstanceState == null");
             selectItem(0,false);
         }else{
             int position=savedInstanceState.getInt(MANU_INDEX,0);
@@ -104,7 +116,6 @@ public class MainActivity extends ActionBarActivity implements HtmlTask.TaskInte
                     while (oflineVotes.moveToNext()){
                         String quoteAdress = oflineVotes.getString(oflineVotes.getColumnIndex("quote_adress"));
                         String quoteJS = oflineVotes.getString(oflineVotes.getColumnIndex("vote_adress"));
-                        //Log.d(TAG, "sendVote " + quoteAdress);
                         webView.loadUrl(quoteAdress);
                         webView.loadUrl(quoteJS);
                         db.deleteOfflineVote(quoteAdress);
@@ -128,7 +139,7 @@ public class MainActivity extends ActionBarActivity implements HtmlTask.TaskInte
         //Log.d(TAG,"selectItem "+position);
         //**
 
-        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager = getFragmentManager();
         Fragment currentFragment=fragmentManager.findFragmentById(R.id.content_frame);
         if(fromDrawer || currentFragment==null) {
             Fragment fragment;
@@ -146,6 +157,12 @@ public class MainActivity extends ActionBarActivity implements HtmlTask.TaskInte
                     fragment = new QuoteFragment();
             }
 
+            if(goToPage != null && position!=0){
+                goToPage.setVisible(false);
+            }
+            if(goToPage != null && position == 0){
+                goToPage.setVisible(true);
+            }
             Bundle args = new Bundle();
             args.putInt(QuoteFragment.ARG_MENU_INDEX, position);
             fragment.setArguments(args);
@@ -179,14 +196,14 @@ public class MainActivity extends ActionBarActivity implements HtmlTask.TaskInte
 
     @Override
     public void execute(String adress, QuoteFragment fragment, boolean loaded, boolean refresh, int currentIndex, ArrayList<Quote> quotes) {
+
         if(currentTask==null){
             currentTask=new HtmlTask();
             currentTask.setCurrentIndex(currentIndex);
 
         }
-        currentTask.link(fragment,getApplicationContext());
+        currentTask.link(fragment, getApplicationContext());
         currentTask.setQuotes(quotes);
-        //Log.d(TAG,"adress "+adress);
         currentTask.execute(adress);
     }
 
@@ -240,5 +257,56 @@ public class MainActivity extends ActionBarActivity implements HtmlTask.TaskInte
         sharingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share_quote)));
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        goToPage = menu.findItem(R.id.action_go_to_page);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(item.getItemId() == R.id.action_go_to_page){
+            final Dialog dialog=new Dialog(this);
+            dialog.setContentView(R.layout.dialog_go_to_page);
+            RelativeLayout dialogLayout=(RelativeLayout)dialog.findViewById(R.id.dialog_layout);
+            TextView goToPageLabel = (TextView)dialog.findViewById(R.id.page_label);
+            goToPageLabel.setTextColor(Utility.getDefaultTextColor());
+            dialogLayout.setBackgroundColor(Utility.getActivityBackgroundColor());
+            MaterialRippleLayout rippleOk=(MaterialRippleLayout)dialog.findViewById(R.id.ripple_ok);
+            final EditText inputPage= (EditText) dialog.findViewById(R.id.to_page);
+            inputPage.setTextColor(Utility.getDefaultTextColor());
+            rippleOk.setRippleColor(Utility.getDefaultTextColor());
+            rippleOk.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int max = preferences.getInt(Utility.MAX_PAGE_LABEL, -1);
+                    Fragment fragment = new QuoteFragment();
+                    Bundle args = new Bundle();
+                    String value = inputPage.getText().toString();
+                    try {
+                        Integer.parseInt(value);
+                    } catch (Exception e) {
+                        value = String.valueOf(max);
+                    }
+                    Log.d("bash", "link "+QuoteFragment.adressArray[NEW] + String.valueOf(value));
+                    args.putInt(QuoteFragment.ARG_MENU_INDEX, globalPosition);
+                    args.putString(QuoteFragment.HAS_ADRESS, QuoteFragment.adressArray[NEW] + "/" + String.valueOf(value));
+                    args.putString(QuoteFragment.NEXT_LINK, QuoteFragment.adressArray[NEW] + "/" + String.valueOf(Integer.parseInt(value) - 1));
+                    fragment.setArguments(args);
+                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+                    transaction.replace(R.id.content_frame, fragment);
+                    transaction.commit();
+                    getSupportActionBar().setTitle(getResources().getStringArray(R.array.navigation_drawer_items)[globalPosition]);
+                    dialog.cancel();
+                }
+            });
+            dialog.show();
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -137,6 +137,9 @@ public class HtmlTask extends AsyncTask<String,Void,ArrayList<Quote>> {
                 }
             }
         }
+        if(quotes.get(0).getAdress().indexOf(QuoteFragment.adressArray[MainActivity.NEW])>=0){
+            Utility.updateMaxPage(quotes.get(0).getAdress());
+        }
         return quotes;
     }
 
