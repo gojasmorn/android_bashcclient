@@ -287,13 +287,19 @@ public class MainActivity extends ActionBarActivity implements HtmlTask.TaskInte
                     int max = preferences.getInt(Utility.MAX_PAGE_LABEL, -1);
                     Fragment fragment = new QuoteFragment();
                     Bundle args = new Bundle();
+                    int intValue = 0;
                     String value = inputPage.getText().toString();
                     try {
-                        Integer.parseInt(value);
+                        intValue = Integer.parseInt(value);
                     } catch (Exception e) {
                         value = String.valueOf(max);
                     }
-                    Log.d("bash", "link "+QuoteFragment.adressArray[NEW] + String.valueOf(value));
+                    if (intValue > max) {
+                        value = String.valueOf(max);
+                    }
+                    if(intValue<1){
+                        value = "1";
+                    }
                     args.putInt(QuoteFragment.ARG_MENU_INDEX, globalPosition);
                     args.putString(QuoteFragment.HAS_ADRESS, QuoteFragment.adressArray[NEW] + "/" + String.valueOf(value));
                     args.putString(QuoteFragment.NEXT_LINK, QuoteFragment.adressArray[NEW] + "/" + String.valueOf(Integer.parseInt(value) - 1));
